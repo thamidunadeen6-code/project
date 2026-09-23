@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>අඳුරු කාමරය</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap">
+<style>
+:root{--bg:#050506;--ink:#d9d4cc;--blood:#8f1212;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:#050506;color:var(--ink);font-family:"Noto Sans Sinhala","Iskoola Pota",sans-serif;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+#dark{position:fixed;inset:0;background:radial-gradient(circle 110px at var(--x,50%) var(--y,50%),transparent 0,rgba(5,5,6,.92) 70%,#050506 100%);pointer-events:none;display:none}
+.msg{max-width:22em;line-height:1.7;font-size:1.15rem}
+h1{font-size:2rem;margin:0 0 .5em;color:var(--blood)}
+button{font:inherit;font-size:1.1rem;color:var(--ink);background:transparent;border:2px solid var(--blood);padding:.7em 1.6em;border-radius:6px;margin-top:1em}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+#whisper{position:fixed;left:0;right:0;bottom:18%;text-align:center;font-size:1.2rem;color:#7a7670;opacity:0;transition:opacity 1.5s;pointer-events:none;padding:0 20px}
+#scare{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9}
+#scare svg{width:min(120vw,120vh);height:auto}
+#scare.on{display:flex;animation:shake .08s infinite}
+@keyframes shake{0%{transform:translate(-8px,4px)}50%{transform:translate(8px,-6px)}100%{transform:translate(-4px,-8px)}}
+#reveal{position:fixed;inset:0;background:#f4f0e6;color:#1a1a1a;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:10}
+#reveal h1{color:#1a1a1a;font-size:2.4rem}
+#reveal button{color:#1a1a1a;border-color:#1a1a1a}
+#stage{background:linear-gradient(160deg,#ffe3ec 0%,#e6e9ff 55%,#d9f4ff 100%);color:#2b2340}
+#intro,#check{background:#fff;border-radius:28px;padding:36px 28px;box-shadow:0 18px 50px rgba(90,70,160,.22);animation:pop .7s ease-out both}
+#intro h1,#check h1{color:#3b2a6b;font-size:2.2rem;margin:0 0 .4em}
+#intro p,#check p{margin:0 0 1.2em;color:#54497a}
+#intro button,#check button{margin:0;border:0;color:#fff;background:linear-gradient(135deg,#ff7aa2,#7a8cff);border-radius:999px;padding:.8em 2.2em;font-weight:700;box-shadow:0 8px 20px rgba(122,140,255,.45);transition:transform .15s}
+#intro button:active{transform:scale(.96)}
+#intro .hint{font-size:.95rem;background:#f1ecff;border-radius:14px;padding:.7em 1em;color:#4a3d80}
+#check{display:none}
+#check .alt{background:#fff;color:#4a3d80;border:2px solid #b9b0f0;box-shadow:none;margin-top:.7em}
+@keyframes pop{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#scare.on,#intro{animation:none}}
+</style>
+</head>
+<body>
+<div id="stage"><div class="msg" id="intro">
+<h1>සුභ පැතුම්! 🎁</h1>
+<p>ඔබ වෙනුවෙන් පුංචි පුදුමයක් තියෙනවා. පහළ බොත්තම ඔබන්න.</p>
+<p class="hint" id="hint">🔊 හොඳම අත්දැකීමට ෆෝන් එකේ ශබ්දය වැඩි කරන්න</p>
+<button id="go">ඇතුල් වෙන්න</button>
+</div>
+<div class="msg" id="check">
+<h1>ශබ්ද පරීක්ෂාව 🔔</h1>
+<p>ශබ්දයක් ඇහෙනවාද? නැත්නම් ෆෝන් එකේ volume බොත්තමෙන් වැඩි කරන්න.</p>
+<button id="yes">ඔව්, ඇහෙනවා</button><br>
+<button class="alt" id="ding">නැවත වාදනය කරන්න</button>
+</div></div>
+<div id="dark"></div>
+<div id="whisper"></div>
+<div id="scare" aria-hidden="true">
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="200" cy="200" rx="170" ry="195" fill="#cfc9bb"/>
+<ellipse cx="200" cy="200" rx="170" ry="195" fill="none" stroke="#000" stroke-width="10"/>
+<ellipse cx="135" cy="150" rx="52" ry="62" fill="#000"/>
+<ellipse cx="265" cy="150" rx="52" ry="62" fill="#000"/>
+<circle cx="135" cy="150" r="9" fill="#e11"/>
+<circle cx="265" cy="150" r="9" fill="#e11"/>
+<path d="M95 270 Q200 400 305 270 Q200 320 95 270Z" fill="#000"/>
+<path d="M125 285l14 30 14-24 14 34 14-28 14 36 14-30 14 32 14-26 14 28 12-24" fill="none" stroke="#cfc9bb" stroke-width="8"/>
+</svg>
+</div>
+<div id="reveal"><div class="msg">
+<h1>විහිළුවක්! 😄</h1>
+<p>බය වුණාද? දැන් මේක ඔබේ යාළුවෙක්ට යවන්න.</p>
+<button id="again">නැවත බලන්න</button>
+</div></div>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var ac=null,master=null,beat=null,timers=[];
+function tone(f,d,type,vol,when){if(!ac)return;var o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,ac.currentTime+(when||0));g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+(when||0)+d);o.connect(g);g.connect(master);o.start(ac.currentTime+(when||0));o.stop(ac.currentTime+(when||0)+d+.05)}
+function heartbeat(){tone(55,.18,'sine',.9,0);tone(50,.2,'sine',.8,.22)}
+function scream(){
+ if(!ac)return;
+ var len=ac.sampleRate*1.6,buf=ac.createBuffer(1,len,ac.sampleRate),d=buf.getChannelData(0);
+ for(var i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
+ var n=ac.createBufferSource();n.buffer=buf;
+ var g=ac.createGain();g.gain.value=2.2;n.connect(g);g.connect(master);n.start();
+ var o=ac.createOscillator();o.type='sawtooth';o.frequency.setValueAtTime(500,ac.currentTime);
+ o.frequency.linearRampToValueAtTime(1500,ac.currentTime+.4);o.frequency.linearRampToValueAtTime(700,ac.currentTime+1.4);
+ var g2=ac.createGain();g2.gain.value=1.6;o.connect(g2);g2.connect(master);o.start();o.stop(ac.currentTime+1.5);tone(60,1.2,'square',1.5,0);tone(1800,1.0,'sawtooth',.8,.1)}
+function say(t){var w=$('whisper');w.style.opacity=0;setTimeout(function(){w.textContent=t;w.style.opacity=1},400)}
+function later(fn,ms){timers.push(setTimeout(fn,ms))}
+function move(e){var p=e.touches?e.touches[0]:e;$('dark').style.setProperty('--x',p.clientX+'px');$('dark').style.setProperty('--y',p.clientY+'px')}
+function initAudio(){
+ try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();
+ if(!master){var m=ac.createGain();m.gain.value=2.5;var c=ac.createDynamicsCompressor();c.threshold.value=-30;c.knee.value=10;c.ratio.value=20;m.connect(c);c.connect(ac.destination);master=m}}catch(e){}
+}
+function ding(){initAudio();tone(880,.5,'sine',.35,0);tone(1320,.6,'sine',.3,.25)}
+function start(){
+ initAudio();
+ $('stage').style.display='none';$('reveal').style.display='none';
+ $('dark').style.display='block';$('whisper').style.opacity=0;
+ heartbeat();beat=setInterval(heartbeat,1100);
+ later(function(){say('ඔයා ඇහුවද...?')},2500);
+ later(function(){say('මොකක්ද ඒ පිටිපස්සෙන් ශබ්දය...')},6000);
+ later(function(){say('එයා ඔයාව දකිනවා.')},9500);
+ later(boom,13000)}
+function boom(){
+ clearInterval(beat);$('dark').style.display='none';$('whisper').style.opacity=0;
+ $('scare').classList.add('on');scream();
+ if(navigator.vibrate)navigator.vibrate([300,100,300]);
+ later(function(){$('scare').classList.remove('on');$('reveal').style.display='flex'},2400)}
+$('go').addEventListener('click',function(){$('intro').style.display='none';$('check').style.display='block';ding()});
+$('ding').addEventListener('click',ding);
+$('yes').addEventListener('click',start);
+$('again').addEventListener('click',start);
+document.addEventListener('pointermove',move);
+document.addEventListener('touchmove',move,{passive:true});
+document.addEventListener('touchstart',move,{passive:true});
+})();
+</script>
+</body>
+</html>
